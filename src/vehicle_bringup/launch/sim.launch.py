@@ -23,11 +23,16 @@ def generate_launch_description():
 
     rsp = Node(
         package='robot_state_publisher', executable='robot_state_publisher',
-        parameters=[{'robot_description': robot_desc}])
+        parameters=[{'robot_description': robot_desc,
+                     'use_sim_time': True}])
 
     spawn = Node(
         package='ros_gz_sim', executable='create',
         arguments=['-topic', 'robot_description',
                    '-name', 'vehicle_blue', '-z', '0.05'])
 
-    return LaunchDescription([gz_sim, rsp, spawn])
+    bridge = Node(
+    package='ros_gz_bridge', executable='parameter_bridge',
+    parameters=[{'config_file': os.path.join(bringup, 'config', 'bridge.yaml')}])
+
+    return LaunchDescription([gz_sim, rsp, spawn, bridge])
